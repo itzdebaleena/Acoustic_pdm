@@ -38,7 +38,10 @@
    - Benchmarking single standalone algorithms (Isolation Forest, One-Class SVM, XGBoost, LSTM-AE, FC-AE, Conv2D-AE) establishes rigorous empirical baselines and exposes the supervised open-world failure trap.
    - Combining Conv2D-AE with Latent Isolation Forest ($S_{\text{final}} = 0.6 \cdot S_{\text{recon}} + 0.4 \cdot S_{\text{latent}}$) proves why fusing physical frequency error with latent manifold density achieves the highest ROC-AUC (~97–98%).
 
-5. **Kaggle-First Execution Model:**
+5. **Semester-2 Scale-Up Deferred to `docs/future/`:**
+   - 2026-09-20: Created `docs/future/data-scale.md` (MIMII DUE, DCASE 2023-24, SNR/ID sweeps, field set demo-only) and `docs/future/algorithm-scale.md` (VAE/beta, embedding+kNN, Transformer-AE, Hybrid v2). Explicitly gated until Phase 0-6 closed to protect interim defense.
+
+6. **Kaggle-First Execution Model:**
    - All notebooks are **fully self-contained** — model architectures, training loops, dataset classes, and evaluation logic are defined inline. No `import src.*` required.
    - `src/` folder is a **local reference mirror** with type hints and docstrings for portfolio/documentation purposes only. Notebooks do NOT import from it.
    - 100% of compute-heavy tasks execute on Kaggle Cloud (P100/T4 GPUs).

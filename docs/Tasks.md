@@ -75,3 +75,12 @@
 1. Run `notebooks/04-model-training-and-baselines.ipynb` on Kaggle GPU (attach NB03 output as input dataset).
 2. Download trained model checkpoints (`models/*.pth`, `models/*.joblib`) to local workspace.
 3. Build `notebooks/05-evaluation-and-metrics.ipynb` for Phase 4 comparative benchmarking.
+
+---
+
+## Future Scale-Up (Semester-2, 8 Months — After Phase 0-6 Closed)
+
+> Details live in `docs/future/`. Do not start until Phase 6 demo works.
+
+* [ ] `docs/future/data-scale.md` — MIMII DUE + DCASE 2023-24, SNR/ID sweeps, field phone set (demo only).
+* [ ] `docs/future/algorithm-scale.md` — VAE/beta sweep, embedding+kNN, Transformer-AE, Flow/GAN (optional), Hybrid v2.
