@@ -111,29 +111,31 @@ flowchart TD
 
 ## 5. Directory Layout & Module Structure
 
+> **Execution Model:** Kaggle notebooks are the **primary self-contained codebase** — all architectures, training loops, and evaluation logic are defined inline within each notebook. The `src/` folder is a **local reference mirror** of the same logic with type hints and docstrings for portfolio/documentation purposes. Notebooks do **not** import from `src/`.
+
 ```
 Acoustic_pdm/
-├── Agent.md                                      # AI agent operating rules
+├── Agents.md                                     # AI agent operating rules
 ├── docs/                                         # Unified project documentation
 │   ├── Project.md                                # Project summary, value proposition & scope
 │   ├── Architecture.md                           # DSP pipeline, ML architectures, inference & DAG
 │   ├── Memory.md                                 # Technical decisions, blockers & lessons learned
 │   └── Tasks.md                                  # Phase-by-phase task breakdown & progress tracker
 ├── configs/
-│   └── config.yaml                               # Centralized hyperparameters for entire pipeline
+│   └── config.yaml                               # Centralized hyperparameters (reference defaults)
 ├── data/
 │   ├── raw/                                      # Local sample .wav files (gitignored)
-│   └── processed/                                # Preprocessed .npy tensors (gitignored)
-├── models/                                       # Saved model checkpoints (gitignored)
-├── notebooks/
+│   └── processed/                                # Downloaded preprocessed .npy tensors (gitignored)
+├── models/                                       # Downloaded model checkpoints (gitignored)
+├── notebooks/                                    # ★ PRIMARY CODEBASE (self-contained Kaggle notebooks)
 │   ├── 01-data-acquisition-and-inspection.ipynb  # Phase 1: Dataset catalog & audit
 │   ├── 02-audio-exploration-and-visualization.ipynb # Phase 1: EDA waveforms & spectrograms
-│   ├── 03-preprocessing-engine.ipynb            # Phase 2: Spectrogram extraction & framing
+│   ├── 03-preprocessing-engine.ipynb             # Phase 2: Spectrogram extraction & framing
 │   ├── 04-model-training-and-baselines.ipynb     # Phase 3: Standalone baselines & hybrid training
 │   ├── 05-evaluation-and-metrics.ipynb           # Phase 4: Comparative evaluation & SOTA benchmarking
 │   └── 06-interactive-diagnostic-app.ipynb       # Phase 6: Cloud-hosted live web demo
-├── reports/                                      # Exported metrics, CSV tables, and ROC plots
-├── src/
+├── reports/                                      # Downloaded metrics, CSV tables, and ROC plots
+├── src/                                          # Local reference mirror (NOT imported by notebooks)
 │   ├── __init__.py
 │   ├── preprocess.py                             # Audio loading, STFT, Mel-filterbank, framing
 │   ├── dataset.py                                # PyTorch Dataset & DataLoader
@@ -141,7 +143,6 @@ Acoustic_pdm/
 │   ├── model_vae.py                              # Variational Autoencoder (Stage B)
 │   ├── train.py                                  # Training loop with early stopping & hybrid fitting
 │   └── evaluate.py                               # Scoring, thresholding, and metric computation
-├── app.py                                        # Local offline Streamlit web demo
 ├── requirements.txt                              # Pinned Python dependencies
 └── .gitignore                                    # Clean version control exclusions
 ```

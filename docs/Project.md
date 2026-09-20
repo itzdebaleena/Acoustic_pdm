@@ -45,11 +45,11 @@ The project uses the **Hitachi MIMII** dataset (via Kaggle `daisukelab/dc2020tas
 
 ---
 
-## 4. Dual-Platform Execution Strategy
+## 4. Kaggle-First Execution Strategy
 
-To combine cloud GPU power with complete local offline reliability:
-- **100% Kaggle Cloud:** Heavy processing (dataset indexing, DSP feature extraction, neural network training, benchmarking, and shareable web demo hosting) runs in free Kaggle GPU/CPU notebooks.
-- **Local Persistence:** Local workspace mirrors code, sample audio (`data/raw/`), preprocessed arrays (`data/processed/`), model weights (`models/`), and reports (`reports/`) for offline execution and defense presentations.
+All computation runs on **Kaggle Cloud notebooks** (free P100/T4 GPUs). Each notebook is **fully self-contained** — all model architectures, training loops, and evaluation logic are defined inline. No external `src/` imports are required.
+
+Local workspace stores **downloaded artifacts only** (`.npy` arrays, model checkpoints, reports) for offline reference and defense presentations.
 
 ```mermaid
 flowchart LR
@@ -60,18 +60,15 @@ flowchart LR
         K4 --> K5["NB06\nWeb Demo (Gradio / Cloudflare)"]
     end
 
-    subgraph LocalPersistence["Local Persistence & Offline Fallback"]
-        L1["Sample WAVs\n(data/raw/)"]
+    subgraph LocalArtifacts["Local Artifact Storage (Downloaded from Kaggle)"]
         L2["Processed NPY\n(data/processed/)"]
         L3["Saved Checkpoints\n(models/)"]
         L4["Metrics & Plots\n(reports/)"]
-        L5["Offline Streamlit App\n(app.py)"]
     end
 
     K2 -. "Download NPY Arrays" .-> L2
     K3 -. "Download Weights (.pt/.joblib)" .-> L3
     K4 -. "Download Plots & CSVs" .-> L4
-    L3 --> L5
 ```
 
 ---
@@ -94,6 +91,5 @@ flowchart LR
 
 ## 6. Interactive Web Application
 
-- **Kaggle Cloud Deployment (NB06):** Gradio web application with `share=True` or Streamlit via Cloudflare Tunnel, generating a public 72-hour URL accessible from any device without local setup.
-- **Local Fallback (`app.py`):** Standalone Streamlit app running locally against saved model checkpoints.
-- **Features:** Audio player, original Mel-spectrogram, reconstructed spectrogram, difference heatmap XAI, and real-time Health Diagnostic Gauge.
+- **Kaggle Cloud Deployment (NB06):** Gradio web application with `share=True`, generating a public 72-hour URL accessible from any device without local setup.
+- **Features:** Audio upload & player, model architecture selector, original Mel-spectrogram, reconstructed spectrogram, difference heatmap XAI, and real-time Health Diagnostic Gauge.

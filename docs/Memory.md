@@ -13,6 +13,10 @@
 | 2026-09-01 | Multiple SNR levels complexity | Scoped to 6 dB SNR (cleanest baseline) for initial benchmark. Lower SNRs are optional extensions. |
 | 2026-09-20 | Notebook corruption / malformed JSON | Rebuilt notebooks programmatically using valid JSON parsers to ensure clean cell structures. |
 | 2026-09-20 | Kaggle RAM exhaustion when processing multiple machines | Implemented per-machine loop in NB03 with explicit `del` and `gc.collect()` to remain under 16 GB RAM ceiling. |
+| 2026-09-20 | Source module decoupling & NB04 construction | Built `src/preprocess.py`, `src/dataset.py`, `src/model_ae.py`, `src/train.py`, `src/evaluate.py`, and self-contained Kaggle `NB04` (Conv2D-AE, FC-AE, LSTM-AE, shallow baselines, Dual-Stage Deep Hybrid). |
+| 2026-09-20 | NB04 `state_dict().copy()` early stopping bug | `model.state_dict().copy()` creates a shallow dict copy where tensor values share memory storage with live model parameters. In-place optimizer updates silently corrupt the "best" checkpoint. Fixed to `copy.deepcopy(model.state_dict())` in both NB04 and `src/train.py`. |
+| 2026-09-20 | NB04 XGBoost hardcoded label array | `y_sup = np.array([0]*5000 + [1]*5000)` doesn't dynamically size based on actual anomaly data length, risking data-label mismatch. Fixed to `n_anom = len(flat_anom)` with dynamic label construction. |
+| 2026-09-20 | NB04 unused imports & missing memory management | Removed unused `import yaml` and `import sys`. Added `import copy`, `import gc`, `gc.collect()`, and `torch.cuda.empty_cache()` between machine training loops to stay under Kaggle 16 GB RAM ceiling. Documented config.yaml hyperparameter deviations (batch_size, epochs, patience) in notebook markdown. |
 
 ---
 
@@ -34,7 +38,9 @@
    - Benchmarking single standalone algorithms (Isolation Forest, One-Class SVM, XGBoost, LSTM-AE, FC-AE, Conv2D-AE) establishes rigorous empirical baselines and exposes the supervised open-world failure trap.
    - Combining Conv2D-AE with Latent Isolation Forest ($S_{\text{final}} = 0.6 \cdot S_{\text{recon}} + 0.4 \cdot S_{\text{latent}}$) proves why fusing physical frequency error with latent manifold density achieves the highest ROC-AUC (~97–98%).
 
-5. **Dual-Platform Strategy & Cloud Demo:**
+5. **Kaggle-First Execution Model:**
+   - All notebooks are **fully self-contained** — model architectures, training loops, dataset classes, and evaluation logic are defined inline. No `import src.*` required.
+   - `src/` folder is a **local reference mirror** with type hints and docstrings for portfolio/documentation purposes only. Notebooks do NOT import from it.
    - 100% of compute-heavy tasks execute on Kaggle Cloud (P100/T4 GPUs).
-   - Local persistence holds `.npy` arrays, model checkpoints (`models/`), and reports (`reports/`) for offline execution.
-   - Notebook 06 launches Gradio with `share=True` or Streamlit with Cloudflare Tunnel, generating a public URL for viva presentation on any mobile/laptop browser.
+   - Local workspace stores only downloaded artifacts: `.npy` arrays, model checkpoints (`models/`), and reports (`reports/`).
+   - Notebook 06 launches Gradio with `share=True` on Kaggle, generating a public URL for viva presentation on any mobile/laptop browser.
