@@ -60,7 +60,7 @@ training:
   random_seed: 42
   num_workers: 2            # DataLoader workers (0 on Windows if issues)
 
-# ── Model: Autoencoder ──
+# ── Model: Autoencoder (Primary Standalone) ──
 model_ae:
   latent_dim: 32
   encoder_channels: [1, 32, 64, 128]
@@ -69,19 +69,58 @@ model_ae:
   padding: 1
   activation: "leaky_relu"
 
+# ── Baseline Standalone Models (for Comparison) ──
+baselines:
+  fc_ae:
+    hidden_dims: [512, 256, 128]
+    latent_dim: 32
+  lstm_ae:
+    hidden_dim: 64
+    latent_dim: 32
+    num_layers: 2
+  isolation_forest:
+    n_estimators: 100
+    contamination: 0.05
+    random_state: 42
+  one_class_svm:
+    kernel: "rbf"
+    nu: 0.05
+    gamma: "scale"
+  xgboost:
+    max_depth: 6
+    n_estimators: 100
+    learning_rate: 0.1
+    random_state: 42
+
+# ── Hybrid Model: Dual-Stage Deep Ensemble (Conv2D-AE + Latent IF/SVM) ──
+hybrid:
+  base_encoder: "conv2d_ae"
+  latent_detector: "isolation_forest"  # Options: "isolation_forest", "one_class_svm"
+  alpha_recon: 0.6                     # S_final = alpha * S_recon + (1 - alpha) * S_latent
+  alpha_latent: 0.4
+
 # ── Model: Variational Autoencoder (Stage B) ──
 model_vae:
   latent_dim: 32
   beta: 1.0                 # KL divergence weight (β-VAE)
   encoder_channels: [1, 32, 64, 128]
 
-# ── Evaluation ──
+# ── Evaluation & Benchmarking ──
 evaluation:
   threshold_percentile: 95  # θ = 95th percentile of normal validation scores
   reports_dir: "reports"
+  benchmark_models:
+    - "isolation_forest_shallow"
+    - "one_class_svm_shallow"
+    - "xgboost_supervised"
+    - "lstm_ae"
+    - "fc_ae"
+    - "conv2d_ae"
+    - "hybrid_ae_latent_if"
 
 # ── Paths ──
 paths:
   models_dir: "models"
   scripts_dir: "scripts"
   reports_dir: "reports"
+
