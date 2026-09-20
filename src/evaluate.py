@@ -129,6 +129,47 @@ def compute_hybrid_score(
     return alpha * norm_recon + (1.0 - alpha) * norm_latent
 
 
+def aggregate_blocks_to_clips(
+    block_scores: np.ndarray,
+    blocks_per_clip: int = 309,
+    method: str = "mean"
+) -> np.ndarray:
+    """
+    Aggregate per-block anomaly scores to per-clip (10s WAV) anomaly scores.
+    Standard DCASE / MIMII SOTA evaluation protocol.
+    
+    Args:
+        block_scores: 1D array of per-block anomaly scores.
+        blocks_per_clip: Number of context blocks per 10s audio recording (~309).
+        method: Aggregation method ('mean', 'top10', 'p90', 'max').
+        
+    Returns:
+        1D numpy array of clip-level anomaly scores.
+    """
+    n_total = len(block_scores)
+    n_clips = max(1, round(n_total / blocks_per_clip))
+    clip_chunks = np.array_split(block_scores, n_clips)
+    
+    clip_scores = []
+    for chunk in clip_chunks:
+        if len(chunk) == 0:
+            continue
+        if method == "mean":
+            clip_scores.append(float(np.mean(chunk)))
+        elif method == "top10":
+            k = max(1, int(np.ceil(len(chunk) * 0.10)))
+            top_k = np.partition(chunk, -k)[-k:]
+            clip_scores.append(float(np.mean(top_k)))
+        elif method == "p90":
+            clip_scores.append(float(np.percentile(chunk, 90)))
+        elif method == "max":
+            clip_scores.append(float(np.max(chunk)))
+        else:
+            clip_scores.append(float(np.mean(chunk)))
+            
+    return np.array(clip_scores, dtype=np.float32)
+
+
 def calibrate_threshold(
     val_normal_scores: np.ndarray,
     percentile: float = 95.0

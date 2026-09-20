@@ -48,11 +48,11 @@
 - [x] Define training loop with early stopping, validation tracking, and `copy.deepcopy` checkpointing inline in NB04.
 - [x] Create self-contained `notebooks/04-model-training-and-baselines.ipynb` (ready for Kaggle GPU execution).
 - [x] *(Local ref)* Mirror architectures and training logic in `src/model_ae.py` and `src/train.py`.
-- [ ] Run NB04 on Kaggle GPU and save trained model checkpoints (`models/*.pth`, `models/*.joblib`).
+- [x] Run NB04 on Kaggle GPU and save trained model checkpoints (`models/*.pth`, `models/*.joblib`).
 
 ### Phase 4 — Multi-Model Comparative Evaluation & SOTA Benchmarking
 - [x] *(Local ref)* Mirror scoring and metric routines in `src/evaluate.py`.
-- [x] Create self-contained `notebooks/05-evaluation-and-metrics.ipynb` with all 7-model benchmarking, ROC curves, multi-machine evaluation, and XAI heatmaps (ready for Kaggle GPU execution).
+- [x] Create self-contained `notebooks/05-evaluation-and-metrics.ipynb` with Clip-Level SOTA aggregation, 7-model benchmarking, ROC curves, multi-machine evaluation, and XAI heatmaps.
 - [ ] Run NB05 on Kaggle GPU (attach NB03 + NB04 outputs) and generate:
   - `reports/model_comparison_table.csv` (ROC-AUC, pAUC, Precision, Recall, F1)
   - `reports/multi_model_roc_curves.png`
